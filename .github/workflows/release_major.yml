@@ -1,0 +1,16 @@
+name: Release Major
+
+on:
+  workflow_dispatch:
+    branches: [ main ]
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: zwaldowski/semver-release-action@v2
+        with:
+          bump: major
+          prefix: v
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
