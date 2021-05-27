@@ -11,11 +11,11 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class KVStoreTest : KVStoreTestCase() {
+class RedifTest : RedifTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `set and get`(client: KVStoreAPI) = runBlocking {
+    fun `set and get`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
 
@@ -26,7 +26,7 @@ class KVStoreTest : KVStoreTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `set delete get`(client: KVStoreAPI) = runBlocking {
+    fun `set delete get`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
         val key2 = randString()
@@ -44,7 +44,7 @@ class KVStoreTest : KVStoreTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `psetx and get`(client: KVStoreAPI) = runBlocking {
+    fun `psetx and get`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
 
@@ -55,7 +55,7 @@ class KVStoreTest : KVStoreTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `psetx and get - expired`(client: KVStoreAPI) = runBlocking {
+    fun `psetx and get - expired`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
 
@@ -69,7 +69,7 @@ class KVStoreTest : KVStoreTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `pexpire - success`(client: KVStoreAPI) = runBlocking {
+    fun `pexpire - success`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
 
@@ -86,13 +86,13 @@ class KVStoreTest : KVStoreTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `pexpire - does not exist`(client: KVStoreAPI) = runBlocking {
+    fun `pexpire - does not exist`(client: RedifAPI) = runBlocking {
         assertThat(client.pexpire(randString(), 20)).isFalse()
     }
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `setnx - not set yet - get`(client: KVStoreAPI) = runBlocking {
+    fun `setnx - not set yet - get`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
 
@@ -105,7 +105,7 @@ class KVStoreTest : KVStoreTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `setnx - already set - get`(client: KVStoreAPI) = runBlocking {
+    fun `setnx - already set - get`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
         val original = randString()
@@ -120,7 +120,7 @@ class KVStoreTest : KVStoreTestCase() {
 
     @ParameterizedTest
     @MethodSource("provideClients")
-    fun `setnx - already set but expired - get`(client: KVStoreAPI) = runBlocking {
+    fun `setnx - already set but expired - get`(client: RedifAPI) = runBlocking {
         val key = randString()
         val value = randString()
         val original = randString()

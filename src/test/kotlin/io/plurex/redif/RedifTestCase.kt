@@ -1,20 +1,20 @@
 package io.plurex.redif
 
 import io.plurex.redif.imps.client.KVStoreClientConfig
-import io.plurex.redif.imps.client.lettuce.KVStoreLettuce
-import io.plurex.redif.imps.embedded.KVStoreInMemory
+import io.plurex.redif.imps.client.lettuce.RedifLettuce
+import io.plurex.redif.imps.embedded.RedifInMemory
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.provider.Arguments
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-open class KVStoreTestCase {
+open class RedifTestCase {
 
     fun provideClients(): Stream<Arguments> {
         return Stream.of(
-            Arguments.of(KVStoreInMemory()),
+            Arguments.of(RedifInMemory()),
             Arguments.of(
-                KVStoreLettuce(
+                RedifLettuce(
                     KVStoreClientConfig(
                         host = "localhost",
                         port = 6378

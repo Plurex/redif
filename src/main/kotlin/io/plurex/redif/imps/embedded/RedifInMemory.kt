@@ -2,10 +2,10 @@ package io.plurex.redif.imps.embedded
 
 import io.plurex.pangolin.actors.wrapper.ActorWrapper
 import io.plurex.pangolin.time.timeNowMillis
-import io.plurex.redif.KVStoreAPI
+import io.plurex.redif.RedifAPI
 
 
-class KVStoreInMemory : KVStoreAPI, ActorWrapper() {
+class RedifInMemory : RedifAPI, ActorWrapper() {
 
     private val keyValues: MutableMap<String, MetaValue> = mutableMapOf()
 
