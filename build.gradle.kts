@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.5.10"
-//    id("java-test-fixtures")
+    id("java-test-fixtures")
+    id("com.palantir.docker-compose") version "0.25.0"
     id("com.palantir.git-version") version "0.12.3"
     `maven-publish`
     id("com.jfrog.artifactory") version "4.21.0"
@@ -13,6 +14,7 @@ version = gitVersion().replace(".dirty", "")
 
 repositories {
     mavenCentral()
+    maven(url = "https://plurex.jfrog.io/artifactory/io.plurex.pangolin/")
     maven(url = "https://jitpack.io")
 }
 
@@ -20,6 +22,8 @@ val kotlinStdlibVersion: String by project
 val kotlinVersion: String by project
 val kotlinXVersion: String by project
 val slf4jVersion: String by project
+val lettuceVersion: String by project
+val pangolinVersion: String by project
 
 val junitJupiterVersion: String by project
 val mockkVersion: String by project
@@ -29,15 +33,20 @@ dependencies {
     implementation(kotlin(kotlinStdlibVersion))
     implementation("org.jetbrains.kotlin", "kotlin-reflect", kotlinVersion)
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", kotlinXVersion)
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-reactive", kotlinXVersion)
 
+    implementation("io.lettuce:lettuce-core:$lettuceVersion")
 
     //Logging
-    api("org.slf4j", "slf4j-api", slf4jVersion)
+    implementation("org.slf4j", "slf4j-api", slf4jVersion)
 
-//    testFixturesImplementation("io.mockk", "mockk", mockkVersion)
-//    testFixturesImplementation("org.jetbrains.kotlin", "kotlin-reflect", kotlinVersion)
+    implementation("io.plurex", "pangolin", pangolinVersion)
+
+    testFixturesImplementation("io.mockk", "mockk", mockkVersion)
+    testFixturesImplementation("org.jetbrains.kotlin", "kotlin-reflect", kotlinVersion)
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitJupiterVersion)
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitJupiterVersion)
     testImplementation("io.mockk", "mockk", mockkVersion)
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:$assertKVersion")
     testImplementation("org.junit.jupiter", "junit-jupiter-engine", junitJupiterVersion)
@@ -60,16 +69,17 @@ tasks {
         kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi")
 
     }
-//    compileTestFixturesKotlin {
-//        kotlinOptions.jvmTarget = "1.8"
-//        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi")
-//        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.serialization.ExperimentalSerializationApi")
-//        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlin.ExperimentalUnsignedTypes")
-//        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi")
-//
-//    }
+    compileTestFixturesKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi")
+        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.serialization.ExperimentalSerializationApi")
+        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlin.ExperimentalUnsignedTypes")
+        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi")
+
+    }
 
     test {
+        dependsOn("dockerComposeUp")
         useJUnitPlatform()
     }
 }
@@ -79,30 +89,30 @@ val sourcesJar by tasks.creating(Jar::class) {
     from(sourceSets.getByName("main").allSource)
 }
 
-//publishing {
-//    publications {
-//        create<MavenPublication>("plurexPangolin") {
-//            groupId = "io.plurex"
-//            artifactId = "pangolin"
-//            version = version
-//            from(components["java"])
-//            artifact(sourcesJar)
-//        }
-//    }
-//}
-//
-//artifactory {
-//    setContextUrl("https://plurex.jfrog.io/artifactory")
-//    publish(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig> {
-//        repository(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.DoubleDelegateWrapper> {
-//            setProperty("repoKey", "io.plurex.pangolin")
-//            setProperty("username", java.lang.System.getenv("JFROG_USER"))
-//            setProperty("password", java.lang.System.getenv("JFROG_PASSWORD"))
-//            setProperty("maven", true)
-//        })
-//        defaults(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask> {
-//            publications("plurexPangolin")
-//        })
-//    })
-//
-//}
+publishing {
+    publications {
+        create<MavenPublication>("plurexRedif") {
+            groupId = "io.plurex"
+            artifactId = "redif"
+            version = version
+            from(components["java"])
+            artifact(sourcesJar)
+        }
+    }
+}
+
+artifactory {
+    setContextUrl("https://plurex.jfrog.io/artifactory")
+    publish(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig> {
+        repository(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.DoubleDelegateWrapper> {
+            setProperty("repoKey", "io.plurex.redif")
+            setProperty("username", System.getenv("JFROG_USER"))
+            setProperty("password", System.getenv("JFROG_PASSWORD"))
+            setProperty("maven", true)
+        })
+        defaults(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask> {
+            publications("plurexRedif")
+        })
+    })
+
+}
