@@ -6,10 +6,10 @@ import io.lettuce.core.RedisURI
 import io.lettuce.core.api.coroutines
 import io.lettuce.core.api.coroutines.RedisCoroutinesCommands
 import io.plurex.redif.RedifAPI
-import io.plurex.redif.imps.client.KVStoreClientConfig
+import io.plurex.redif.imps.client.RedifClientConfig
 
 @OptIn(ExperimentalLettuceCoroutinesApi::class)
-class RedifLettuce(config: KVStoreClientConfig) : RedifAPI {
+class RedifLettuce(config: RedifClientConfig) : RedifAPI {
 
     private val client: RedisClient
     private val commands: RedisCoroutinesCommands<String, String>

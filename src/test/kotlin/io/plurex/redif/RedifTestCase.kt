@@ -1,6 +1,6 @@
 package io.plurex.redif
 
-import io.plurex.redif.imps.client.KVStoreClientConfig
+import io.plurex.redif.imps.client.RedifClientConfig
 import io.plurex.redif.imps.client.lettuce.RedifLettuce
 import io.plurex.redif.imps.embedded.RedifInMemory
 import org.junit.jupiter.api.TestInstance
@@ -15,9 +15,9 @@ open class RedifTestCase {
             Arguments.of(RedifInMemory()),
             Arguments.of(
                 RedifLettuce(
-                    KVStoreClientConfig(
+                    RedifClientConfig(
                         host = "localhost",
-                        port = 6378
+                        port = 6377
                     )
                 )
             )

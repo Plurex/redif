@@ -4,4 +4,4 @@ services:
   test-redis:
     image: "redis:6.2.3"
     ports:
-      - "6378:6379"
+      - "6377:6379"

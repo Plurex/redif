@@ -1,13 +1,12 @@
 package io.plurex.redif.imps.client
 
-
-data class KVStoreClientConfig(
+data class RedifClientConfig(
     val host: String,
     val port: Int,
-    val auth: KVStoreClientAuthConfig? = null
+    val auth: RedifClientAuthConfig? = null
 )
 
-data class KVStoreClientAuthConfig(
+data class RedifClientAuthConfig(
     val user: String,
     val password: String
 )
