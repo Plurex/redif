@@ -24,8 +24,7 @@ jobs:
           aws-access-key-id: ${{ secrets.PUBLISH_AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.PUBLISH_AWS_ACCESS_SECRET }}
           aws-region: eu-west-1
-      - name: Set codeartifact password
+      - name: Run Tests
         run: |
           export CODEARTIFACT_PASSWORD=`aws codeartifact get-authorization-token --domain plurex --domain-owner 253115806526 --region eu-west-1 --query authorizationToken --output text`
-      - name: Test with Gradle
-        run: ./gradlew test
+          ./gradlew test
