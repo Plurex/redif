@@ -4,7 +4,6 @@ plugins {
     id("com.palantir.docker-compose") version "0.25.0"
     id("com.palantir.git-version") version "0.12.3"
     `maven-publish`
-    id("com.jfrog.artifactory") version "4.21.0"
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -16,6 +15,13 @@ repositories {
     mavenCentral()
     maven(url = "https://plurex.jfrog.io/artifactory/io.plurex.pangolin/")
     maven(url = "https://jitpack.io")
+    maven {
+        url = uri("https://plurex-253115806526.d.codeartifact.eu-west-1.amazonaws.com/maven/plurex.prod/")
+        credentials {
+            username = "aws"
+            password = System.getenv("CODEARTIFACT_PASSWORD")
+        }
+    }
 }
 
 val kotlinStdlibVersion: String by project
@@ -99,20 +105,13 @@ publishing {
             artifact(sourcesJar)
         }
     }
-}
-
-artifactory {
-    setContextUrl("https://plurex.jfrog.io/artifactory")
-    publish(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig> {
-        repository(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.dsl.DoubleDelegateWrapper> {
-            setProperty("repoKey", "io.plurex.redif")
-            setProperty("username", System.getenv("JFROG_USER"))
-            setProperty("password", System.getenv("JFROG_PASSWORD"))
-            setProperty("maven", true)
-        })
-        defaults(delegateClosureOf<org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask> {
-            publications("plurexRedif")
-        })
-    })
-
+    repositories {
+        maven {
+            url = uri("https://plurex-253115806526.d.codeartifact.eu-west-1.amazonaws.com/maven/plurex.prod/")
+            credentials {
+                username = "aws"
+                password = System.getenv("CODEARTIFACT_PASSWORD")
+            }
+        }
+    }
 }
