@@ -26,6 +26,6 @@ jobs:
           aws-region: eu-west-1
       - name: Set codeartifact password
         run: |
-          aws codeartifact get-authorization-token --domain plurex --domain-owner 253115806526 --region eu-west-1 --query authorizationToken --output text >> $CODEARTIFACT_PASSWORD
+          echo 'aws codeartifact get-authorization-token --domain plurex --domain-owner 253115806526 --region eu-west-1 --query authorizationToken --output text' >> $CODEARTIFACT_PASSWORD
       - name: Test with Gradle
         run: ./gradlew test
