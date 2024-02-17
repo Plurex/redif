@@ -13,7 +13,6 @@ version = gitVersion().replace(".dirty", "")
 
 repositories {
     mavenCentral()
-    maven(url = "https://plurex.jfrog.io/artifactory/io.plurex.pangolin/")
     maven(url = "https://jitpack.io")
     maven {
         url = uri("https://plurex-253115806526.d.codeartifact.eu-west-1.amazonaws.com/maven/plurex.prod/")
