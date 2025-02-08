@@ -21,12 +21,10 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.PUBLISH_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.PUBLISH_AWS_ACCESS_SECRET }}
+          aws-access-key-id: ${{ secrets.AWS_SS_CICD_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SS_CICD_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
-      - name: Set codeartifact password
+      - name: Test
         run: |
-          export CODEARTIFACT_PASSWORD=`aws codeartifact get-authorization-token --domain plurex --domain-owner 253115806526 --region eu-west-1 --query authorizationToken --output text`
-          echo "CODEARTIFACT_PASSWORD=$CODEARTIFACT_PASSWORD" >> "$GITHUB_ENV"
-      - name: Test with Gradle
-        run: ./gradlew test
+          export CODEARTIFACT_PASSWORD=`aws codeartifact get-authorization-token --domain ${{ vars.CODEARTIFACT_DOMAIN }} --domain-owner ${{ vars.CODEARTIFACT_DOMAIN_OWNER }} --region eu-west-1 --query authorizationToken --output text`
+          ./gradlew test
