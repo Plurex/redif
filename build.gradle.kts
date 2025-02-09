@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm") version "1.5.10"
     id("java-test-fixtures")
-    id("com.palantir.docker-compose") version "0.25.0"
     id("com.palantir.git-version") version "0.12.3"
     `maven-publish`
 }
@@ -83,8 +82,13 @@ tasks {
 
     }
 
+    val composeUp = task<Exec>("composeUp") {
+        executable = "docker"
+        setArgs(listOf("compose", "-f", "$rootDir/docker-compose.yml", "up", "-d"))
+    }
+
     test {
-        dependsOn("dockerComposeUp")
+        dependsOn(composeUp)
         useJUnitPlatform()
     }
 }
