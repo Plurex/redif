@@ -9,15 +9,15 @@ on:
         default: 'minor' # Default value if no input is provided
 
 jobs:
-  publish:
+  tag:
     runs-on: ubuntu-latest
     if: github.ref_name == 'main'
     steps:
       - uses: zwaldowski/semver-release-action@v2
         with:
-         bump: ${{ inputs.release_version }}
-         prefix: v
-         github_token: ${{ secrets.GITHUB_TOKEN }}
+          bump: ${{ inputs.release_version }}
+          prefix: v
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -37,3 +37,4 @@ jobs:
         run: |
           export CODEARTIFACT_PASSWORD=`aws codeartifact get-authorization-token --domain ${{ vars.CODEARTIFACT_DOMAIN }} --domain-owner ${{ vars.CODEARTIFACT_DOMAIN_OWNER }} --region eu-west-1 --query authorizationToken --output text`
           ./gradlew publish
+
