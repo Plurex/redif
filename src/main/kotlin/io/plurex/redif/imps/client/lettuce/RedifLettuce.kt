@@ -18,13 +18,10 @@ class RedifLettuce(config: RedifClientConfig) : RedifAPI {
         val uriBuilder = RedisURI.builder()
         uriBuilder.withHost(config.host)
         uriBuilder.withPort(config.port)
-        config.auth?.let {
-            uriBuilder.withAuthentication(it.user, it.password)
-        }
+        config.auth?.let { uriBuilder.withAuthentication(it.user, it.password) }
         client = RedisClient.create(uriBuilder.build())
         commands = client.connect().coroutines()
     }
-
 
     override suspend fun pexpire(key: String, expireMillis: Long): Boolean {
         return commands.pexpire(key, expireMillis).check()
@@ -54,4 +51,3 @@ class RedifLettuce(config: RedifClientConfig) : RedifAPI {
 private fun <T : Any> T?.check(): T {
     return this ?: throw Exception("Null check failed on Lettuce coroutines api")
 }
-

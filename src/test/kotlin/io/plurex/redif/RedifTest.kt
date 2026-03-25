@@ -5,13 +5,18 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import io.plurex.pangolin.random.randString
+import java.util.*
+import kotlin.math.absoluteValue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
 class RedifTest : RedifTestCase() {
+
+    private val random = Random()
+
+    private fun randString() = "GENERATED${random.nextInt().absoluteValue}"
 
     @ParameterizedTest
     @MethodSource("provideClients")
@@ -65,7 +70,6 @@ class RedifTest : RedifTestCase() {
 
         assertThat(client.get(key)).isNull()
     }
-
 
     @ParameterizedTest
     @MethodSource("provideClients")
@@ -134,5 +138,4 @@ class RedifTest : RedifTestCase() {
 
         assertThat(client.get(key)).isEqualTo(value)
     }
-
 }

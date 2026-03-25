@@ -1,8 +1,17 @@
 plugins {
-    kotlin("jvm") version "1.5.10"
+    alias(libs.plugins.kotlin.jvm)
     id("java-test-fixtures")
-    id("com.palantir.git-version") version "0.12.3"
+    alias(libs.plugins.git.version)
+    alias(libs.plugins.ktfmt)
     `maven-publish`
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+ktfmt {
+    kotlinLangStyle()
 }
 
 val gitVersion: groovy.lang.Closure<String> by extra
@@ -22,66 +31,29 @@ repositories {
     }
 }
 
-val kotlinStdlibVersion: String by project
-val kotlinVersion: String by project
-val kotlinXVersion: String by project
-val slf4jVersion: String by project
-val lettuceVersion: String by project
-val pangolinVersion: String by project
-
-val junitJupiterVersion: String by project
-val mockkVersion: String by project
-val assertKVersion: String by project
 
 dependencies {
-    implementation(kotlin(kotlinStdlibVersion))
-    implementation("org.jetbrains.kotlin", "kotlin-reflect", kotlinVersion)
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", kotlinXVersion)
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-reactive", kotlinXVersion)
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.reactive)
 
-    implementation("io.lettuce:lettuce-core:$lettuceVersion")
+    implementation(libs.lettuce.core)
 
     //Logging
-    implementation("org.slf4j", "slf4j-api", slf4jVersion)
+    implementation(libs.slf4j.api)
 
-    implementation("io.plurex", "pangolin", pangolinVersion)
+    testFixturesImplementation(libs.mockk)
+    testFixturesImplementation(libs.kotlin.reflect)
 
-    testFixturesImplementation("io.mockk", "mockk", mockkVersion)
-    testFixturesImplementation("org.jetbrains.kotlin", "kotlin-reflect", kotlinVersion)
-
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", junitJupiterVersion)
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitJupiterVersion)
-    testImplementation("io.mockk", "mockk", mockkVersion)
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:$assertKVersion")
-    testImplementation("org.junit.jupiter", "junit-jupiter-engine", junitJupiterVersion)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.mockk)
+    testImplementation(libs.assertk)
+    testImplementation(libs.junit.jupiter.engine)
 }
 
 tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.serialization.ExperimentalSerializationApi")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlin.ExperimentalUnsignedTypes")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi")
-        kotlinOptions.freeCompilerArgs += listOf("-Xopt-in=io.ktor.util.KtorExperimentalAPI")
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.serialization.ExperimentalSerializationApi")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlin.ExperimentalUnsignedTypes")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi")
-
-    }
-    compileTestFixturesKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.serialization.ExperimentalSerializationApi")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlin.ExperimentalUnsignedTypes")
-        kotlinOptions.freeCompilerArgs += listOf("-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi")
-
-    }
-
     val composeUp = task<Exec>("composeUp") {
         executable = "docker"
         setArgs(listOf("compose", "-f", "$rootDir/docker-compose.yml", "up", "-d"))
