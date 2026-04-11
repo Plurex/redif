@@ -102,7 +102,16 @@ private fun globToRegex(pattern: String): Regex {
                     append("]")
                 }
 
-                '.', '(', ')', '+', '{', '}', '|', '^', '$', '\\' -> {
+                '.',
+                '(',
+                ')',
+                '+',
+                '{',
+                '}',
+                '|',
+                '^',
+                '$',
+                '\\' -> {
                     append("\\")
                     append(char)
                 }
