@@ -7,6 +7,7 @@ import io.lettuce.core.api.coroutines
 import io.lettuce.core.api.coroutines.RedisCoroutinesCommands
 import io.plurex.redif.RedifAPI
 import io.plurex.redif.imps.client.RedifClientConfig
+import kotlinx.coroutines.flow.toList
 
 @OptIn(ExperimentalLettuceCoroutinesApi::class)
 class RedifLettuce(config: RedifClientConfig) : RedifAPI {
@@ -28,7 +29,14 @@ class RedifLettuce(config: RedifClientConfig) : RedifAPI {
     }
 
     override suspend fun del(vararg keys: String): Long {
-        return commands.del(*keys).check()
+        var counter = 0L
+        keys.forEach { pattern ->
+            val matchingKeys = commands.keys(pattern).toList()
+            if (matchingKeys.isNotEmpty()) {
+                counter += commands.del(*matchingKeys.toTypedArray()).check()
+            }
+        }
+        return counter
     }
 
     override suspend fun set(key: String, value: String) {

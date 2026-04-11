@@ -63,9 +63,56 @@ class RedifInMemory(private val clock: Clock = Clock.System) : RedifAPI {
     override suspend fun del(vararg keys: String): Long =
         mutex.withLock {
             var counter = 0L
-            keys.forEach { keyValues.remove(it)?.let { counter++ } }
+            val allKeys = keyValues.keys.toList()
+            keys.forEach { pattern ->
+                val regex = globToRegex(pattern)
+                allKeys.forEach { key ->
+                    if (regex.matches(key)) {
+                        keyValues.remove(key)?.let { counter++ }
+                    }
+                }
+            }
             counter
         }
+}
+
+private fun globToRegex(pattern: String): Regex {
+    val regexStr = buildString {
+        var i = 0
+        while (i < pattern.length) {
+            val char = pattern[i]
+            when (char) {
+                '*' -> append(".*")
+                '?' -> append(".")
+                '[' -> {
+                    append("[")
+                    i++
+                    if (i < pattern.length && pattern[i] == '^') {
+                        append("^")
+                        i++
+                    }
+                    while (i < pattern.length && pattern[i] != ']') {
+                        if (pattern[i] == '\\' && i + 1 < pattern.length) {
+                            append("\\")
+                            i++
+                        }
+                        append(pattern[i])
+                        i++
+                    }
+                    append("]")
+                }
+
+                '.', '(', ')', '+', '{', '}', '|', '^', '$', '\\' -> {
+                    append("\\")
+                    append(char)
+                }
+
+                else -> append(char)
+            }
+            i++
+        }
+    }
+    return Regex("^$regexStr$")
 }
 
 private data class MetaValue(val value: String, var expireAt: Instant? = null)
